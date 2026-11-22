@@ -1,0 +1,8 @@
+numpy
+scipy
+matplotlib
+gmsh
+mujoco
+schemdraw
+imageio
+imageio-ffmpeg
