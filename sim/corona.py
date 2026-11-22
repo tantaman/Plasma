@@ -194,6 +194,7 @@ def mesh_cell(
     n_wire: int = 14,
     h_max: float | None = None,
     h_coll: float | None = None,
+    split: float = 0.5,
 ) -> Mesh:
     """Half unit cell of one thruster stage.
 
@@ -214,7 +215,8 @@ def mesh_cell(
         and its collector upstream is at the same potential, so no ions can flow back
         towards the previous stage.  The tail is treated as charged-up insulation
         (zero normal field, no ion flux); its permittivity (foam, eps_r ~ 1.03) is
-        neglected.
+        neglected.  `split` places the periodic cut at that fraction of the collector's
+        conductive chord (0.5 = mid-chord).
     """
     import gmsh
 
@@ -227,7 +229,7 @@ def mesh_cell(
         if c_d < 2 * rc or c_c < 3 * rc:
             raise ValueError("need c_d >= t_c and c_c >= 1.5 t_c")
         S = c + d
-        x0 = -c + 0.5 * c_c
+        x0 = -c + split * c_c
         x1 = x0 + S
     elif mode == "isolated":
         x0 = -(upstream if upstream is not None else 4.0 * d)
@@ -291,7 +293,7 @@ def mesh_cell(
                             (groups["guard"], h_coll), (groups["insul"], 2 * h_coll)], h_max)
         gmsh.model.mesh.generate(2)
         info = dict(kind=mode, d=d, pitch=pitch, r_e=r_e, t_c=t_c, c_c=c_c, c_d=c_d,
-                    x0=x0, x1=x1, stage_pitch=S)
+                    x0=x0, x1=x1, stage_pitch=S, split=split)
         return _finish_gmsh(gmsh, groups, pair, 2, info)
     finally:
         gmsh.finalize()
