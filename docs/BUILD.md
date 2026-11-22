@@ -9,6 +9,12 @@ Drawings: `hardware/01_general_arrangement`, `02_electrode_detail`,
 `03_hv_module_schematic`, `04_system_wiring` (SVG and PNG). Parts and masses:
 `hardware/BOM.md`.
 
+**Before step 4:** if you intend to try the wet-emitter variant
+(`docs/WET_EMITTER.md`), run its gate W on the one-stage rig straight after gate G-A.
+A pass changes the HV modules from 145 W at ±10 kV to about 25 W at 60 kV. That
+document also finds that the dry rig should draw about 15 % more current than the table
+in step 3 says.
+
 ## Safety — read first
 
 - **High voltage.** Four supplies of ±10 kV, together able to deliver about 30 mA

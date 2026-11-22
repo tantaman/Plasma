@@ -11,6 +11,12 @@ more. With every uncertain input set to its pessimistic value the ratio is 0.84 
 the craft stays on the ground; with optimistic values it is 1.54. The build guide puts
 a cheap bench measurement before any real construction for that reason.
 
+**Larger payloads.** A search for a way to lift more ended at replacing the corona wires
+with wetted emitters that spray charged droplets, which drift about ten times slower
+than ions. On the same airframe the model predicts 100 g of payload instead of 20 g, on
+a fifth of the power. It is unproven, by anyone: see
+[Lifting a larger payload](#lifting-a-larger-payload) and `docs/WET_EMITTER.md`.
+
 ![General arrangement](hardware/01_general_arrangement.png)
 
 ## The design in numbers
@@ -115,6 +121,57 @@ Each of these, taken alone, moves thrust-to-weight this far from the baseline 1.
 | Payload | 20 g | 50 – 0 g | 1.10 – 1.22 |
 | Frame tube mass | 41 g | × 1.5 – × 0.75 | 1.12 – 1.19 |
 
+## Lifting a larger payload
+
+Thrust per watt of any ionic-wind thruster is one over the speed of its charge carriers.
+Air ions drift at about 130 m/s, so 99 % of the power is lost. No published change to
+electrodes, ion source or duct raises thrust per watt by more than about 30 % at a
+useful thrust density (`docs/WET_EMITTER.md` lists what was checked). The route left is
+a slower carrier.
+
+**Ion Lantern W** keeps the airframe and replaces each tungsten wire with a pre-wetted,
+toothed porous ribbon that electrosprays droplets of a non-volatile liquid. Droplets of
+0.1–0.3 µm drift at about 13 m/s. The gap holds the same space charge, so thrust is the
+same, at about an eighth of the current.
+
+![Wet-emitter concept](hardware/05_wet_emitter_concept.png)
+
+| | Dry baseline | Wet emitters (model) |
+|---|---:|---:|
+| Maximum thrust | 5.67 N | 5.15 N |
+| Electrical power at full throttle | 579 W | 102 W |
+| Thrust per electrical power | 9.8 N/kW | 50 N/kW |
+| HV converters + battery | 330 g | 149 g |
+| Payload | 20 g | 100 g |
+| All-up mass | 496 g | 432 g |
+| Thrust / weight | 1.17 | 1.21 |
+| Airborne time (simulated) | 79 s | 161 s |
+
+![Wet-emitter sizing](results/wet_sizing.png)
+
+What this rests on:
+
+- **No one has measured such a thruster.** The search found patents proposing
+  low-mobility carriers and one simulation of a single spray needle, and no thrust data.
+- **The emitter is the open question.** It has to deliver 43 µA per metre from a passive
+  wick, about three times the area density published for wick arrays, without the dry
+  parts going into corona.
+- **The supply changes.** To keep every stage spraying positive, grille potentials fall
+  by 20 kV per stage: 60 kV end to end instead of ±10 kV. With alternating rails every
+  second stage would spray negative, which tends to break into corona and would erase
+  the gain.
+- **The error band is wide.** Any single assumption at its pessimistic value still
+  leaves 32 g or more. All of them pessimistic together give thrust/weight 0.65: it
+  stays on the ground.
+- **One bench test settles it.** The one-stage rig of the build guide, run dry and then
+  wet: the wet emitters must give at least four times the thrust per ampere. Do it
+  before building HV modules, because a pass changes their specification.
+
+Extending the solver for this also showed that the baseline's periodic cell under-counts
+supply current by about 17 %. Corrected, the dry craft sits at thrust/weight 1.10, not
+1.17. The baseline files and the numbers above have not been changed; details are in
+`docs/WET_EMITTER.md`.
+
 ## What is assumed, not shown
 
 - **Converter weight.** 2.7 kW/kg has been reported once, in an MIT thesis, for a
@@ -161,7 +218,8 @@ cd sim
 python sizing.py              # results/design.json, results/sizing.png
 python validate_corona.py     # results/corona_validation.{json,png}
 python flight.py              # results/flight.{json,png,mp4}; needs EGL (apt: libegl1)
-cd .. && python hardware/make_drawings.py
+python wet.py                 # wet-emitter study: results/design_wet.json, wet_*.png, flight_wet.{json,png}
+cd .. && python hardware/make_drawings.py && python hardware/make_wet_drawing.py
 ```
 
 `sim/design.py` holds the frozen design inputs. `python sizing.py --search` re-runs the
@@ -183,3 +241,4 @@ design-space search.
 - MIT thesis reporting 2.7 kW/kg at 20 kV for a 40 s run:
   <https://dspace.mit.edu/handle/1721.1/163001>
 - Battery mass: <https://www.racedayquads.com/products/tattu-r-line-version-1-0-22-2v-6s-650mah-lipo-micro-battery-xt30>
+- Sources for the wet-emitter study are listed in `docs/WET_EMITTER.md`.

@@ -143,7 +143,7 @@ class Thruster:
         self.f_max = float(np.interp(self.v_max, self.V, self.T))
         self.volts = np.full(4, 0.0)
         self.aug = np.zeros(4)  # duct-suction part of the thrust (lags the body force)
-        self.tau_v = 0.015   # s, converter + multiplier response
+        self.tau_v = rep.get("tau_v", 0.015)   # s, converter + multiplier response (wet emitters: spray response)
         self.tau_f = 0.15    # s, duct through-flow build-up (~ duct length / flow speed)
 
     def volts_for(self, f):
